@@ -290,11 +290,11 @@ python -m unittest discover -s tests -v
 ### exe を作る
 
 ```bash
-pip install pyinstaller
+pip install -r requirements.txt pyinstaller
 pyinstaller mdript.spec
 ```
 
-`dist/mdript.exe`（約31MB・単一ファイル）ができます。
+`dist/mdript.exe`（約31MB・単一ファイル）ができます。`requirements.txt` の依存を入れた Python で実行してください。入っていない環境でビルドすると、起動時に `No module named numpy` で止まる exe ができます。
 
 `v1.0.0` のようなタグを push すると、GitHub Actions（`.github/workflows/build.yml`）で
 テスト → exe ビルド → Releases への添付まで自動で行います。
