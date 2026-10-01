@@ -43,14 +43,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt pyinstaller
       - name: exe をビルド
-        run: pyinstaller --noconfirm ygo-card-cropper.spec
+        run: pyinstaller --noconfirm mdript.spec
       - name: SHA-256 を作る
         run: |
           cd dist
           Get-FileHash *.exe -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } | Set-Content -Encoding utf8 SHA256SUMS.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: ygo-card-cropper-windows
+          name: mdript-windows
           path: dist/*
       - name: リリースに添付
         if: startsWith(github.ref, 'refs/tags/')

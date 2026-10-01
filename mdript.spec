@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""PyInstaller 用の設定。`pyinstaller ygo-card-cropper.spec` で exe を作る。"""
+"""PyInstaller 用の設定。`pyinstaller mdript.spec` で exe を作る。"""
 
 block_cipher = None
 
@@ -28,7 +28,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name="遊戯王カード切り抜きツール",
+    name="mdript",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

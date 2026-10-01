@@ -19,7 +19,7 @@ from .catalog import Catalog, load_config, save_config, user_data_dir
 from .layout import PRESETS
 from .pipeline import CONFIRMED, ERROR, NOT_CARD, REVIEW, Cropper, Options, collect_images
 
-APP_TITLE = "遊戯王カード切り抜きツール"
+APP_TITLE = "MasterDuel切り抜きツール"
 
 try:                                     # ドラッグ＆ドロップ（無くても動く）
     from tkinterdnd2 import DND_FILES, TkinterDnD
@@ -83,7 +83,7 @@ class App:
     def _build_vars(self):
         cfg = self.config
         default_out = cfg.get("output_dir") or os.path.join(
-            os.path.expanduser("~"), "Pictures", "ygo_cards")
+            os.path.expanduser("~"), "Pictures", "mdript")
         self.var_output = tk.StringVar(value=default_out)
         self.var_resolution = tk.StringVar(value=cfg.get("resolution", "自動"))
         self.var_format = tk.StringVar(value=cfg.get("save_format", "webp"))

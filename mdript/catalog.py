@@ -2,7 +2,7 @@
 """照合用データの置き場所と読み書き。
 
   * 同梱データ    : アプリに同梱するハッシュDB（カードIDとハッシュ値だけ）
-  * ユーザーデータ : %APPDATA%/YgoCardCropper/ 以下。
+  * ユーザーデータ : %APPDATA%/mdript/ 以下。
                     追加ハッシュ・取得したカード名・設定を置く。
 
 同梱データは書き換えず、更新分はユーザーデータ側に重ねる。
@@ -18,7 +18,7 @@ import numpy as np
 
 from .phash import HASH_HEX, HEX_PER_REGION
 
-APP_NAME = "YgoCardCropper"
+APP_NAME = "mdript"
 BUNDLED_HASHES = "card_hashes.json"
 USER_HASHES = "card_hashes_user.json"
 USER_NAMES = "card_names.json"

@@ -14,11 +14,11 @@ from PIL import Image
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-from ygocropper.layout import (CARD_ASPECT, REF_CARD_BOX, detect_card_box,  # noqa: E402
+from mdript.layout import (CARD_ASPECT, REF_CARD_BOX, detect_card_box,  # noqa: E402
                                nudged_boxes, predict_card_box)
-from ygocropper.phash import (ART_BOXES, HASH_HEX, HEX_PER_REGION,  # noqa: E402
+from mdript.phash import (ART_BOXES, HASH_HEX, HEX_PER_REGION,  # noqa: E402
                               artwork_phash_hex, crop_region, hamming, phash_hex)
-from ygocropper.pipeline import collect_images, rounded_alpha, safe_filename  # noqa: E402
+from mdript.pipeline import collect_images, rounded_alpha, safe_filename  # noqa: E402
 
 
 def fake_card(width=894, height=1302, seed=0):
@@ -145,7 +145,7 @@ class TestPipelineHelpers(unittest.TestCase):
             self.assertEqual(len(collect_images([tmp], recursive=False)), 1)
 
     def test_broken_json_is_ignored(self):
-        from ygocropper.catalog import _read_json
+        from mdript.catalog import _read_json
         with tempfile.TemporaryDirectory() as tmp:
             path = os.path.join(tmp, "config.json")
             for text in ("[]", "{broken", '"text"'):
@@ -155,7 +155,7 @@ class TestPipelineHelpers(unittest.TestCase):
 
     def test_cli_rejects_zero_resolution(self):
         import argparse
-        from ygocropper.cli import _resolution
+        from mdript.cli import _resolution
         self.assertEqual(_resolution("1920x1080"), (1920, 1080))
         for bad in ("0x0", "1920x0", "-1x1080"):
             with self.assertRaises(argparse.ArgumentTypeError, msg=bad):
@@ -178,7 +178,7 @@ class TestPipelineHelpers(unittest.TestCase):
             tcl = tkinter.Tcl()
         except tkinter.TclError:
             self.skipTest("Tcl が使えない環境")
-        from ygocropper.gui import parse_drop
+        from mdript.gui import parse_drop
         data = r"C:/a.png {C:/my shots/b.png} C:/card\{1\}.png"
         self.assertEqual(parse_drop(tcl, data),
                          ["C:/a.png", "C:/my shots/b.png", "C:/card{1}.png"])
@@ -188,7 +188,7 @@ class TestIdentify(unittest.TestCase):
     """作り物のハッシュDBで、切り抜き→照合→保存まで通す。"""
 
     def setUp(self):
-        from ygocropper.catalog import Catalog
+        from mdript.catalog import Catalog
         self.catalog = Catalog.__new__(Catalog)
         self.catalog.names = {"1": {"n": "テストカード"}}
         self.catalog.hashes = {}
@@ -198,7 +198,7 @@ class TestIdentify(unittest.TestCase):
         self.catalog.names_fetched = ""
 
     def test_identifies_and_saves(self):
-        from ygocropper.pipeline import CONFIRMED, Cropper, Options
+        from mdript.pipeline import CONFIRMED, Cropper, Options
         with tempfile.TemporaryDirectory() as tmp:
             source = os.path.join(tmp, "shot.png")
             fake_screenshot(seed=0).save(source)
@@ -210,7 +210,7 @@ class TestIdentify(unittest.TestCase):
             self.assertTrue(os.path.exists(result.saved_path))
 
     def test_both_format_does_not_overwrite_an_existing_png(self):
-        from ygocropper.pipeline import Cropper, Options
+        from mdript.pipeline import Cropper, Options
         with tempfile.TemporaryDirectory() as tmp:
             existing = os.path.join(tmp, "テストカード.png")
             fake_card(seed=5).save(existing)                # 別のイラスト
@@ -224,7 +224,7 @@ class TestIdentify(unittest.TestCase):
             self.assertEqual((os.path.getmtime(existing), os.path.getsize(existing)), before)
 
     def test_skips_the_same_artwork(self):
-        from ygocropper.pipeline import SKIPPED_NOTE, Cropper, Options
+        from mdript.pipeline import SKIPPED_NOTE, Cropper, Options
         with tempfile.TemporaryDirectory() as tmp:
             cropper = Cropper(self.catalog, Options(output_dir=tmp, write_csv=False))
             card = fake_card(seed=0)
@@ -236,7 +236,7 @@ class TestIdentify(unittest.TestCase):
             self.assertEqual(note, SKIPPED_NOTE)
 
     def test_works_at_other_resolutions(self):
-        from ygocropper.pipeline import Cropper, Options
+        from mdript.pipeline import Cropper, Options
         cropper = Cropper(self.catalog, Options(write_csv=False))
         for size in ((1920, 1080), (3840, 2160), (2560, 1080)):
             found = cropper.identify(fake_screenshot(size, seed=2))
@@ -254,7 +254,7 @@ class TestIdentify(unittest.TestCase):
 
     def test_does_not_confirm_a_non_card_image(self):
         """カードではない画像を、確定として出力しないこと。"""
-        from ygocropper.pipeline import CONFIRMED, Cropper, Options
+        from mdript.pipeline import CONFIRMED, Cropper, Options
         with tempfile.TemporaryDirectory() as tmp:
             source = os.path.join(tmp, "noise.png")
             rng = np.random.default_rng(99)
@@ -295,7 +295,7 @@ class TestUpdater(unittest.TestCase):
     """通信部分を差し替えて、新しいカードセットの取り込み手順を確認する。"""
 
     def setUp(self):
-        from ygocropper import updater
+        from mdript import updater
         self.updater = updater
         self._orig = (updater._get, updater.fetch_pack_cards,
                       updater.fetch_card_page, updater.REQUEST_INTERVAL)
@@ -395,7 +395,7 @@ class HardeningTest(unittest.TestCase):
 
     def test_response_size_is_limited(self):
         import gzip
-        from ygocropper import updater
+        from mdript import updater
         self.assertEqual(updater._read_limited(self._Res(b"abc")), b"abc")
         self.assertEqual(updater._read_limited(self._Res(gzip.compress(b"abc"), True)), b"abc")
         bomb = gzip.compress(b"x" * (updater.MAX_RESPONSE + 10))      # 展開すると上限超え
@@ -405,7 +405,7 @@ class HardeningTest(unittest.TestCase):
     def test_redirect_only_to_official_https(self):
         import urllib.error
         import urllib.request
-        from ygocropper import updater
+        from mdript import updater
         handler = updater._SameSiteRedirect()
         req = urllib.request.Request("https://" + updater.ALLOWED_HOST + "/a")
         for bad in ("http://" + updater.ALLOWED_HOST + "/b", "https://example.com/b",
@@ -417,14 +417,14 @@ class HardeningTest(unittest.TestCase):
         self.assertIsNotNone(ok)
 
     def test_csv_cells_are_not_formulas(self):
-        from ygocropper.pipeline import _csv_cell
+        from mdript.pipeline import _csv_cell
         for danger in ("=1+1", "+1", "-1", "@SUM(A1)"):
             self.assertTrue(_csv_cell(danger).startswith("'"))
         self.assertEqual(_csv_cell("ブラック・マジシャン"), "ブラック・マジシャン")
         self.assertEqual(_csv_cell(12), 12)
 
     def test_broken_user_data_is_ignored(self):
-        from ygocropper import catalog
+        from mdript import catalog
         self.assertEqual(catalog._hex_list("not a list"), [])
         good = "0123456789abcdef" * 2
         self.assertEqual(catalog._hex_list([good, 5, "zz", good[:-1], "G" * 32]), [good])

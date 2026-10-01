@@ -30,7 +30,7 @@ def _quality(text):
 
 def build_parser():
     p = argparse.ArgumentParser(
-        prog="ygocropper",
+        prog="mdript",
         description="遊戯王のスクリーンショットからカードを切り抜いてカード名を付ける")
     p.add_argument("paths", nargs="*", help="画像ファイルまたはフォルダ")
     p.add_argument("-o", "--output", default="output", help="出力先フォルダ（既定: output）")

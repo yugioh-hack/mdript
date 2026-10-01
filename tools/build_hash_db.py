@@ -22,7 +22,7 @@ from concurrent.futures import ProcessPoolExecutor
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-from ygocropper.phash import ART_BOXES, HASH_SIZE, artwork_phash_hex  # noqa: E402
+from mdript.phash import ART_BOXES, HASH_SIZE, artwork_phash_hex  # noqa: E402
 
 EXTS = (".jpg", ".jpeg", ".png", ".webp")
 _VARIANT = re.compile(r"(?:_alt\d+|_\d+| \(\d+\))+$")
