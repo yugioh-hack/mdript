@@ -14,7 +14,7 @@ import tkinter as tk
 import traceback
 from tkinter import filedialog, messagebox, ttk
 
-from . import updater
+from . import __version__, updater
 from .catalog import Catalog, load_config, save_config, user_data_dir
 from .layout import PRESETS
 from .pipeline import CONFIRMED, ERROR, NOT_CARD, REVIEW, Cropper, Options, collect_images
@@ -63,7 +63,7 @@ def _create_root():
 class App:
     def __init__(self):
         self.root = _create_root()
-        self.root.title(APP_TITLE)
+        self.root.title(f"{APP_TITLE} v{__version__}")
         self.root.geometry("880x620")
         self.root.minsize(760, 520)
 
